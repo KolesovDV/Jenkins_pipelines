@@ -48,7 +48,7 @@ pipeline {
             steps {
                 echo 'Build..'
                 sh "ssh root@${dnsrecord}.${aws_route53_zone} 'mkdir -p  ${php_project_path}/deploy && cd ${php_project_path}/deploy  && git clone ${php_source_build} ${env.BUILD_NUMBER}  '"
-                sh "ssh root@${dnsrecord}.${aws_route53_zone} ' COMPOSER_MEMORY_LIMIT=-1 composer install ' "
+                sh "ssh root@${dnsrecord}.${aws_route53_zone} ' cd ${php_project_path}/deploy/${env.BUILD_NUMBER} && COMPOSER_MEMORY_LIMIT=-1 /usr/local/bin/composer install ' "
                 sh "ssh root@${dnsrecord}.${aws_route53_zone} ' cd ${php_project_path}/deploy/${env.BUILD_NUMBER} && /usr/local/bin/composer update tgalopin/html-sanitizer && /usr/local/bin/composer update ' "
                 sh "ssh root@${dnsrecord}.${aws_route53_zone} ' cd ${php_project_path}/deploy/${env.BUILD_NUMBER} &&  /usr/local/bin/composer update erusev/parsedown && /usr/local/bin/composer update '"
                 sh "ssh root@${dnsrecord}.${aws_route53_zone} ' ln -s  ${php_project_path}/deploy/${env.BUILD_NUMBER} ${php_project_path}/demo ' " //link in not exist
