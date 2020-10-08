@@ -1,0 +1,7 @@
+---
+
+- name: Install python minimal
+  raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+
+- meta: clear_host_errors
+

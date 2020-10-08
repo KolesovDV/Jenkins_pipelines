@@ -1,0 +1,6 @@
+---
+- name: Install Let's Encrypt
+  yum:
+   name: letsencrypt
+   state: present
+

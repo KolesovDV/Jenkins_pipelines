@@ -1,0 +1,13 @@
+---
+- name: restart postgresql
+  service:
+    name: "{{ postgresql_daemon }}"
+    state: restarted
+    sleep: 5
+
+- name: restart firewalld
+  service:
+    name: "firewalld"
+    state: reloaded
+
+

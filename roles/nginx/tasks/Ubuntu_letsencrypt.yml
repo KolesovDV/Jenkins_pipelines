@@ -1,0 +1,6 @@
+---
+- name: Install Let's Encrypt
+  apt:
+   name: letsencrypt
+   state: present
+

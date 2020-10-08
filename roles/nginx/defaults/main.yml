@@ -1,0 +1,19 @@
+---
+nginx_site_name: ""
+nginx_root_path: /usr/share/nginx
+nginx_available_path: /etc/nginx/sites-available
+nginx_site_enabled_path: /etc/nginx/sites-enabled
+nginx_nginxconfigio_path: /etc/nginx/nginxconfig.io
+#nginx_http_port: 80
+#nginx_keepalive_timeout: 65
+#nginx_access_log: /var/log/nginx/acces.log
+#nginx_error_log: /var/log/nginx/error.log
+#nginx_https_port: 443
+#nginx_max_connections: 768
+#nginx_sendfile: "on"
+#nginx_tcp_nodelay: "on"
+#nginx_tcp_nopush: "on"
+#main_login: "kolesov"
+nginx_service_state: started
+nginx_service_enabled: yes
+

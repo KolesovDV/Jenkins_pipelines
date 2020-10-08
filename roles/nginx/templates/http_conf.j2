@@ -1,0 +1,10 @@
+server {
+        listen 80 ;
+        server_name {{ nginx_site_name }};
+
+        location ^~ /.well-known {
+         root {{ nginx_root_path }}/{{ nginx_site_name }}/;           
+          allow all;
+}
+}
+

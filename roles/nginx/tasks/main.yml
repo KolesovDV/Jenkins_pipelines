@@ -1,0 +1,52 @@
+---
+#setup/install tasks.
+- include_tasks: "{{ ansible_facts['distribution'] }}.yml"
+
+# Vhost configuration.
+- import_tasks: vhosts.yml
+
+
+- include_tasks: "{{ ansible_facts['distribution'] }}_letsencrypt.yml"
+- include: cert.yml
+
+- name: Create virtual hosts
+  template:
+   src: php/nginx/vhost.conf.j2
+   dest: '{{ nginx_available_path }}/{{ item }}'
+   owner: root
+   group: root
+   mode: '0644'
+  with_items: "{{ nginx_site_name }}"
+  notify: restart nginx
+
+- name: Create nginx.conf
+  template:
+   src: php/nginx/nginx.conf.j2
+   dest: /etc/nginx/nginx.conf
+   owner: root
+   group: root
+   mode: '0644'
+  notify: restart nginx
+
+- name: Create additional nginx configs
+  template:
+   src: "php/nginxconfig.io/{{ item }}.j2"
+   dest: "{{ nginx_nginxconfigio_path }}/{{ item }}"
+   owner: root
+   group: root
+   mode: '0644'
+  with_items: 
+    - general.conf
+    - letsencrypt.conf
+    - php_fastcgi.conf
+    - security.conf
+  notify: restart nginx
+
+- include: crontab.yml
+
+- name: Ensure nginx service is running as configured.
+  service:
+    name: nginx
+    state: "{{ nginx_service_state }}"
+    enabled: "{{ nginx_service_enabled }}"
+

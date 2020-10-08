@@ -1,0 +1,46 @@
+---
+
+- name: Configure host based authentication (if entries are configured).
+  template:
+    src: "pg_hba.conf.j2"
+    dest: "{{ postgresql_config_path }}/pg_hba.conf"
+      #    owner: "{{ postgresql_user }}"
+      #group: "{{ postgresql_group }}"
+      #mode: 0600
+  notify: restart postgresql
+  when: postgresql_hba_entries | length > 0
+  register: hb_conf
+
+- name: restart postgresql
+  service:
+    name: "{{ postgresql_daemon }}"
+    state: restarted
+    sleep: 5
+  when: hb_conf.changed
+
+
+
+# Create a new database for webapp
+- postgresql_db:
+    name: "{{ postgres_db }}"
+  tags: db
+
+- name: Create  user, set  password, grant privs
+  postgresql_user:
+    name: "{{ postgres_user }}"
+    password: "{{ postgres_passwd }}"
+    role_attr_flags: CREATEDB,NOSUPERUSER
+      #login_host: "{{ item.login_host | default('localhost') }}"
+      #login_password: "{{ item.login_password | default(omit) }}"
+      #  login_user: "{{ item.login_user | default('postgres') }}"
+      #login_unix_socket: "{{ item.login_unix_socket | default(postgresql_unix_socket_directories[0]) }}"
+      #port: "{{ item.port | default(omit) }}"
+    state: "{{ item.state | default('present') }}"
+  tags: users
+    #no_log: true
+  become: true
+    #become_user: "{{ postgresql_user }}"
+  # See: https://github.com/ansible/ansible/issues/16048#issuecomment-229012509
+  vars:
+    ansible_ssh_pipelining: true
+

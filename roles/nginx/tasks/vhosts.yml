@@ -1,0 +1,53 @@
+---
+
+- name: Remove default nginx config
+  file:
+   path: '{{ nginx_site_enabled_path }}/default'
+   state: absent
+  notify: restart nginx
+
+
+- name: Create folders
+  file:
+   path: '{{ item }}'
+   state: directory
+  with_items:
+     - "{{ nginx_available_path }}"
+     - "{{ nginx_site_enabled_path }}"
+     - "{{ nginx_nginxconfigio_path }}"
+#  tags: site_directory
+
+- name: Create site directory
+  file:
+   path: '{{ nginx_root_path }}/{{ item }}'
+   state: directory
+  with_items:
+     - "{{ nginx_site_name }}"
+#  tags: site_directory
+
+
+- name: Create virtual hosts for certbot
+  template:
+   src: http_conf.j2
+   dest: '/etc/nginx/sites-available/{{ item }}'
+   owner: root
+   group: root
+   mode: '0644'
+  with_items: "{{ nginx_site_name }}"
+  notify: restart nginx
+
+- name: Create symbolic link
+  file:
+   src: /etc/nginx/sites-available/{{ item }}
+   dest: /etc/nginx/sites-enabled/{{ item }}
+   state: link
+   owner: root
+   group: root
+   mode: '0644'
+  with_items: "{{ nginx_site_name }}"
+  notify: restart nginx
+
+- name : reload nginx
+  service:
+   name: nginx
+   state: reloaded

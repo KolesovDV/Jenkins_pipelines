@@ -1,0 +1,56 @@
+server {
+    listen                  443 ssl http2;
+    listen                  [::]:443 ssl http2;
+    server_name             {{ nginx_site_name }};
+    set                     $base /opt/demo;
+    root                    $base/public;
+
+    # SSL
+    ssl_certificate         /etc/letsencrypt/live/{{ nginx_site_name }}/fullchain.pem;
+    ssl_certificate_key     /etc/letsencrypt/live/{{ nginx_site_name }}/privkey.pem;
+    ssl_trusted_certificate /etc/letsencrypt/live/{{ nginx_site_name }}/chain.pem;
+
+    # security
+    include                 nginxconfig.io/security.conf;
+
+    # index.php
+    index                   index.php;
+
+    # index.php fallback
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    # additional config
+    include nginxconfig.io/general.conf;
+
+    # handle .php
+    location ~ \.php$ {
+        include nginxconfig.io/php_fastcgi.conf;
+    }
+}
+
+# subdomains redirect
+server {
+    listen                  443 ssl http2;
+    listen                  [::]:443 ssl http2;
+    server_name             *.{{ nginx_site_name }};
+
+    # SSL
+    ssl_certificate         /etc/letsencrypt/live/{{ nginx_site_name }}/fullchain.pem;
+    ssl_certificate_key     /etc/letsencrypt/live/{{ nginx_site_name }}/privkey.pem;
+    ssl_trusted_certificate /etc/letsencrypt/live/{{ nginx_site_name }}/chain.pem;
+    return                  301 https://{{ nginx_site_name }}$request_uri;
+}
+
+# HTTP redirect
+server {
+    listen      80;
+    listen      [::]:80;
+    server_name .{{ nginx_site_name }};
+    include     nginxconfig.io/letsencrypt.conf;
+
+    location / {
+        return 301 https://{{ nginx_site_name }}$request_uri;
+    }
+}

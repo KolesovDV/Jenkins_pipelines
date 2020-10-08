@@ -1,0 +1,6 @@
+---
+ - name: Create letsecrypt certs
+   shell: certbot certonly -n --webroot -w {{ nginx_root_path }}/{{ nginx_site_name }} -d {{ nginx_site_name }} -m admin@admin.yt --agree-tos
+   args:
+    creates: /etc/letsencrypt/live/{{ nginx_site_name }}
+   tags: shell
