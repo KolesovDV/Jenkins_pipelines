@@ -16,8 +16,6 @@ pipeline {
         postgres_user          = credentials('jenkins-postgres-user')   //ansible use it to
         additional_ssh_key     = credentials('jenkins-additional-ssh-key')
         postgres_db            = 'symfony' //ansible use it to
-        source_symlink_place   = '/usr/share/nginx/html'
-        git_source_code        = 'git@gitlab.rebrainme.com:kolesov.dv/jenkins2.git'
         dnsrecord              = 'somerecord'
         aws_route53_zone       = "dns zone"
         php_source_build       = "https://github.com/symfony/demo.git"
